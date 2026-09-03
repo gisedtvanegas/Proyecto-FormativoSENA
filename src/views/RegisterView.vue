@@ -28,8 +28,6 @@
         <label for="correo">Ingrese su correo:</label>
         <input type="email" name="correoz" id="correo" v-model="form.correo" required><br><br>
 
-        <p>Rol asignado: Usuario</p>
-
         <label for="clave">Ingrese su contraseña:</label>
         <input type="password" name="clavev" id="clave" minlength="8" v-model="form.clave" required>
         <small>Minimo 8 caracteres.</small><br><br>

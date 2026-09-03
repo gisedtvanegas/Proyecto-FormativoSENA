@@ -3,9 +3,9 @@
     <div class="footer-contenedor">
       <div class="footer-info">
         <h3>Casa y Jardín - Vivero Café</h3>
-        <p>Dirección: Calle 123 #45-67, Bogotá</p>
-        <p>Teléfono: +57 300 123 4567</p>
-        <p>Email: contacto@casayjardin.com</p>
+        <p>Dirección: Carrera 17 # 52 - 71 Bogotá</p>
+        <p>WhatsApp: +57 319 2189853</p>
+        <p>Email: casayjardinadmon@gmail.com</p>
       </div>
 
       <div class="logo-footer">
@@ -14,9 +14,9 @@
 
       <div class="footer-redes">
         <h3>Síguenos</h3>
-        <a href="https://www.facebook.com/casayjardincll53/" target="_blank" rel="noopener">Facebook</a> |
+        <a href="https://www.facebook.com/share/19N3TjYKYF/" target="_blank" rel="noopener">Facebook</a> |
         <a href="https://www.instagram.com/casayjardinviverocafe/" target="_blank" rel="noopener">Instagram</a> |
-        <a href="https://wa.me/573001234567" target="_blank" rel="noopener">WhatsApp</a>
+        <a href="https://wa.me/573138370431" target="_blank" rel="noopener">WhatsApp</a>
       </div>
     </div>
 

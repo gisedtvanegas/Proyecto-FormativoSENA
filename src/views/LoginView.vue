@@ -4,10 +4,8 @@
       <h2>Iniciar Sesion</h2>
       
       <form @submit.prevent="handleLogin">
-        <label for="usuario"><span class="material-symbols-outlined">account_circle</span></label>
         <input type="text" name="usuario" id="usuario" placeholder="Documento" v-model="usuario" required />
 
-        <label for="pass"><span class="material-symbols-outlined">lock</span></label>
         <input type="password" name="pass" id="pass" placeholder="clave" v-model="pass" required />
 
         <p class="enlace-recuperacion">
