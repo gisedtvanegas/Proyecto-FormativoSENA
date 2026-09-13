@@ -8,7 +8,14 @@ export const usuariosService = {
     const { data, error } = await supabase
       .from('usuarios')
       .select(`
-        *,
+        idusuarios,
+        nombre,
+        apellido,
+        documento,
+        telefono,
+        correo,
+        tipo_documento_idtipo_documento,
+        roles_idroles,
         tipo_documento:tipo_documento_idtipo_documento(idtipo_documento, descripcion_doc),
         roles:roles_idroles(idroles, descripcion_rol)
       `)

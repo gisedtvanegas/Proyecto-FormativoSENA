@@ -35,8 +35,8 @@
               <td>{{ r.descripcionEstado }}</td>
               <td class="row-actions">
                 <button v-if="r.puedeEditar" type="button" @click="handleActualizar(r)">Actualizar</button>
-                <button v-if="!r.esCancelada" type="button" @click="handleCancelar(r.idreserva)">Cancelar</button>
-                <small v-if="!r.puedeEditar && !r.esCancelada">Solo es editable con tres días de antelación.</small>
+                <button v-if="r.puedeCancelar" type="button" @click="handleCancelar(r.idreserva)">Cancelar</button>
+                <small v-if="!r.puedeEditar && !r.esCancelada">Solo puedes editar o cancelar con más de tres días de anticipación.</small>
               </td>
             </tr>
           </tbody>
@@ -49,7 +49,7 @@
     <main id="nuevaReservaModal" class="Formulario modal-nueva-reserva" :class="{ 'activo': mostrarModalReserva }" :aria-hidden="(!mostrarModalReserva).toString()">
       <button type="button" class="cerrar-nueva-reserva" id="cerrarReserva" aria-label="Cerrar" @click="mostrarModalReserva = false">&times;</button>
       <h2 class="titulo-form">Reserva tu actividad</h2>
-      <form id="reservaForm" @submit.prevent="handleCrearReserva">
+      <form id="reservaForm" @submit.prevent="abrirConfirmacionReserva">
         <section class="datos">
           <label>Nombre<input :value="authStore.profile?.nombre || ''" readonly></label>
           <label>Apellido<input :value="authStore.profile?.apellido || ''" readonly></label>
@@ -59,7 +59,7 @@
         </section>
         
         <label>Personas<input type="number" name="num_personas" min="1" max="10" v-model="form.num_personas" required></label>
-        <label>Fecha<input type="date" name="fecha" v-model="form.fecha" required></label>
+        <label>Fecha<input type="date" name="fecha" v-model="form.fecha" :min="fechaMinima" required></label>
         <label>Hora<input type="time" name="hora" v-model="form.hora" required></label>
         <p class="mensaje">El cupo del local es de 30 personas. Las reservas deben hacerse con más de 3 días de anticipación. El pago se realiza en el establecimiento.</p>
         <label>Actividad
@@ -70,7 +70,7 @@
             </option>
           </select>
         </label>
-        <button type="button" id="abrirPago" @click="mostrarModalPago = true">Confirmar reserva</button>
+        <button type="submit" id="abrirPago">Confirmar reserva</button>
       </form>
     </main>
 
@@ -96,7 +96,7 @@
 </template>
 
 <script setup>
-import { ref, onMounted } from 'vue';
+import { computed, ref, onMounted } from 'vue';
 import { useAuthStore } from '../stores/authStore';
 import { reservasService } from '../services/reservas.service';
 import { actividadesService } from '../services/actividades.service';
@@ -120,6 +120,13 @@ const cargandoLista = ref(true);
 const mostrarModalReserva = ref(false);
 const mostrarModalPago = ref(false);
 const mostrarModalExito = ref(false);
+
+const fechaMinima = computed(() => {
+  const fecha = new Date();
+  fecha.setHours(0, 0, 0, 0);
+  fecha.setDate(fecha.getDate() + 4);
+  return fecha.toISOString().slice(0, 10);
+});
 
 onMounted(async () => {
   try {
@@ -162,9 +169,18 @@ const handleCrearReserva = async () => {
   }
 };
 
+const abrirConfirmacionReserva = () => {
+  mensaje.value = '';
+  if (!form.value.fecha || !form.value.actividad_idactividad) {
+    mensaje.value = 'Completa la fecha y la actividad antes de confirmar.';
+    return;
+  }
+  mostrarModalPago.value = true;
+};
+
 const handleActualizar = async (r) => {
   try {
-    await reservasService.crearReserva({
+    await reservasService.actualizarReserva({
       idreserva: r.idreserva,
       num_personas: r.num_personas,
       fecha: r.fecha,

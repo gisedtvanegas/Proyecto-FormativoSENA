@@ -10,6 +10,8 @@ import ActivitiesView from '../views/ActivitiesView.vue';
 import MenuView from '../views/MenuView.vue';
 import UserReservationsView from '../views/UserReservationsView.vue';
 import UserDashboardView from '../views/UserDashboardView.vue';
+import ConfirmEmailView from '../views/ConfirmEmailView.vue';
+import ResetPasswordView from '../views/ResetPasswordView.vue';
 
 // Admin Views
 import AdminDashboardView from '../views/admin/AdminDashboardView.vue';
@@ -28,7 +30,13 @@ const routes = [
   { path: '/', name: 'home', component: HomeView },
   { path: '/login', name: 'login', component: LoginView, meta: { publicOnly: true } },
   { path: '/registro', name: 'registro', component: RegisterView, meta: { publicOnly: true } },
+  {
+    path: '/confirmar-correo',
+    name: 'confirmar-correo',
+    component: ConfirmEmailView
+  },
   { path: '/recuperar-clave', name: 'recuperar-clave', component: ForgotPasswordView },
+  { path: '/restablecer-contrasena', name: 'restablecer-contrasena', component: ResetPasswordView },
   { path: '/actividades', name: 'actividades', component: ActivitiesView },
   { path: '/menu', name: 'menu', component: MenuView },
 

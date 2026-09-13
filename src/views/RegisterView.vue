@@ -108,14 +108,15 @@ const goLogin = () => {
 
 const handleRegister = async () => {
   mensajeError.value = '';
+  mensajeExito.value = '';
   cargando.value = true;
 
   try {
     await authService.register(form.value);
-    mensajeExito.value = 'Registro completado con éxito. Redirigiendo al inicio de sesión...';
-    setTimeout(() => {
-      router.push('/login');
-    }, 1200);
+
+    mensajeExito.value =
+      `¡Registro realizado correctamente! Hemos enviado un correo de confirmación a ${form.value.correo}. Revisa tu bandeja de entrada y pulsa "Confirm email address" para activar tu cuenta.`;
+
   } catch (err) {
     mensajeError.value = err.message || 'Error al completar el registro';
   } finally {

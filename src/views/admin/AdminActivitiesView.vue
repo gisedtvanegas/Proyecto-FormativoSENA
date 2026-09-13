@@ -101,6 +101,7 @@ import { useAuthStore } from '../../stores/authStore';
 import { actividadesService } from '../../services/actividades.service';
 import { parametrosService } from '../../services/parametros.service';
 import ReadOnlyNotice from '../../components/ReadOnlyNotice.vue';
+import { validarImagen } from '../../services/storage.service';
 
 const authStore = useAuthStore();
 
@@ -117,6 +118,8 @@ const listaTiposActividad = ref([]);
 const listaPrecios = ref([]);
 const mensaje = ref('');
 const idActividadAInactivar = ref(null);
+const nuevaFotoArchivo = ref(null);
+const fotosPorActividad = new Map();
 
 onMounted(async () => {
   await cargarTodo();
@@ -133,23 +136,29 @@ const cargarTodo = async () => {
 };
 
 const handleNuevaFotoFile = (e) => {
-  if (e.target.files[0]) {
-    nuevo.value.foto_actividad = e.target.files[0].name;
-  }
+  try {
+    nuevaFotoArchivo.value = e.target.files[0] || null;
+    if (nuevaFotoArchivo.value) validarImagen(nuevaFotoArchivo.value);
+  } catch (err) { nuevaFotoArchivo.value = null; e.target.value = ''; mensaje.value = err.message; }
 };
 
 const handleFotoRowFile = (actividad, e) => {
-  if (e.target.files[0]) {
-    actividad.foto_actividad = e.target.files[0].name;
-  }
+  try {
+    const file = e.target.files[0] || null;
+    if (file) validarImagen(file);
+    if (file) fotosPorActividad.set(actividad.idactividad, file);
+    else fotosPorActividad.delete(actividad.idactividad);
+  } catch (err) { fotosPorActividad.delete(actividad.idactividad); e.target.value = ''; mensaje.value = err.message; }
 };
 
 const handleInsertar = async () => {
   if (authStore.isEmpleado) return;
   try {
+    if (nuevaFotoArchivo.value) nuevo.value.foto_actividad = await actividadesService.subirImagen(nuevaFotoArchivo.value);
     await actividadesService.crear(nuevo.value);
     mensaje.value = 'Actividad guardada correctamente';
     nuevo.value = { descripcion_actividad: '', informacion: '', tipo_actividad_idtipo_actividad: '', lista_precios_idlista_precios: '', foto_actividad: '' };
+    nuevaFotoArchivo.value = null;
     await cargarTodo();
   } catch (err) {
     mensaje.value = err.message;
@@ -159,7 +168,10 @@ const handleInsertar = async () => {
 const handleActualizar = async (actividad) => {
   if (authStore.isEmpleado) return;
   try {
+    const nuevaFoto = fotosPorActividad.get(actividad.idactividad);
+    if (nuevaFoto) actividad.foto_actividad = await actividadesService.subirImagen(nuevaFoto);
     await actividadesService.actualizar(actividad.idactividad, actividad);
+    fotosPorActividad.delete(actividad.idactividad);
     mensaje.value = 'Actividad actualizada correctamente';
     await cargarTodo();
   } catch (err) {

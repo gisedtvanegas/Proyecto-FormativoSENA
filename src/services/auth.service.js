@@ -1,4 +1,5 @@
 import { supabase } from './supabase';
+import { storageService } from './storage.service';
 
 export const authService = {
   /**
@@ -36,6 +37,10 @@ export const authService = {
 
     // Obtener perfil detallado del usuario
     const profile = await this.getProfile(email);
+    if (!profile) {
+      await supabase.auth.signOut();
+      throw new Error('Tu cuenta no está activa o no tiene un perfil asociado.');
+    }
     return { session: data.session, user: data.user, profile };
   },
 
@@ -57,7 +62,10 @@ export const authService = {
     // Registrar en Supabase Auth
     const { data: authData, error: authError } = await supabase.auth.signUp({
       email: userData.correo,
-      password: userData.clave
+      password: userData.clave,
+      options: {
+        emailRedirectTo: `${window.location.origin}/confirmar-correo`
+      }
     });
 
     if (authError) {
@@ -80,7 +88,6 @@ export const authService = {
         documento: userData.documento,
         telefono: userData.telefono,
         correo: userData.correo,
-        clave: userData.clave,
         fecha_nac: userData.fecha_nac,
         fecha_cad: userData.fecha_cad,
         checkbox: userData.checkbox || false,
@@ -105,7 +112,18 @@ export const authService = {
     const { data, error } = await supabase
       .from('usuarios')
       .select(`
-        *,
+        idusuarios,
+        nombre,
+        apellido,
+        documento,
+        telefono,
+        correo,
+        fecha_nac,
+        fecha_cad,
+        checkbox,
+        foto_perfil,
+        tipo_documento_idtipo_documento,
+        roles_idroles,
         tipo_documento:tipo_documento_idtipo_documento(descripcion_doc),
         roles:roles_idroles(descripcion_rol)
       `)
@@ -117,17 +135,38 @@ export const authService = {
     return data;
   },
 
+  async getProfileByAuthUserId(authUserId) {
+    const { data, error } = await supabase
+      .from('usuarios')
+      .select(`
+        idusuarios, nombre, apellido, documento, telefono, correo, fecha_nac,
+        fecha_cad, checkbox, foto_perfil, tipo_documento_idtipo_documento,
+        roles_idroles, tipo_documento:tipo_documento_idtipo_documento(descripcion_doc),
+        roles:roles_idroles(descripcion_rol)
+      `)
+      .eq('auth_user_id', authUserId)
+      .eq('activo', true)
+      .single();
+
+    if (error) return null;
+    return data;
+  },
+
   /**
    * Actualizar perfil del usuario
    */
-  async updateProfile(idUsuario, profileData) {
+  async updateProfile(idUsuario, profileData, fotoArchivo, authUserId) {
+    let fotoPerfil = profileData.foto_perfil;
+    if (fotoArchivo) {
+      fotoPerfil = await storageService.subirFotoPerfil(fotoArchivo, authUserId);
+    }
+
     const { data, error } = await supabase
       .from('usuarios')
       .update({
         nombre: profileData.nombre,
-        correo: profileData.correo,
         telefono: profileData.telefono,
-        foto_perfil: profileData.foto_perfil
+        foto_perfil: fotoPerfil
       })
       .eq('idusuarios', idUsuario)
       .eq('activo', true)
@@ -136,6 +175,14 @@ export const authService = {
 
     if (error) throw new Error(error.message);
     return data;
+  },
+
+  async requestEmailChange(correo) {
+    const { data, error } = await supabase.auth.updateUser({ email: correo }, {
+      emailRedirectTo: `${window.location.origin}/confirmar-correo`
+    });
+    if (error) throw new Error(error.message);
+    return data.user;
   },
 
   /**
@@ -150,7 +197,26 @@ export const authService = {
    * Enviar correo de recuperación
    */
   async resetPasswordEmail(correo) {
-    const { error } = await supabase.auth.resetPasswordForEmail(correo);
+    const { error } = await supabase.auth.resetPasswordForEmail(correo, {
+      redirectTo: `${window.location.origin}/restablecer-contrasena`
+    });
+    if (error) throw new Error(error.message);
+  },
+
+  async updatePassword(password) {
+    if (!password || password.length < 8) {
+      throw new Error('La contraseña debe tener al menos 8 caracteres.');
+    }
+    const { error } = await supabase.auth.updateUser({ password });
+    if (error) throw new Error(error.message);
+  },
+
+  async resendConfirmationEmail(correo) {
+    const { error } = await supabase.auth.resend({
+      type: 'signup',
+      email: correo,
+      options: { emailRedirectTo: `${window.location.origin}/confirmar-correo` }
+    });
     if (error) throw new Error(error.message);
   }
 };

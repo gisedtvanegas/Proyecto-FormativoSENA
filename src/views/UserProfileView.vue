@@ -10,8 +10,8 @@
         <div class="foto-perfil-contenedor">
           <img v-if="fotoPreview" :src="fotoPreview" alt="Foto de perfil" class="foto-perfil-preview">
           <div v-else class="foto-perfil-placeholder">👤</div>
-          <input type="file" name="foto_perfil" class="input-foto-perfil" accept="image/*" @change="handleFotoChange">
-          <small style="color: #6b8e6b; font-size: 0.8rem; margin-top: 5px;">Formatos: JPG, PNG, WEBP (Opcional)</small>
+          <input type="file" name="foto_perfil" class="input-foto-perfil" accept="image/jpeg,image/png,image/webp" @change="handleFotoChange">
+          <small style="color: #6b8e6b; font-size: 0.8rem; margin-top: 5px;">Formatos: JPG, PNG, WEBP · máximo 5 MB (opcional)</small>
         </div>
 
         <label>Nombre
@@ -31,6 +31,7 @@
         </button>
       </form>
     </main>
+    <AccountFeedbackModal :open="modal.open" :title="modal.title" :message="modal.message" @close="modal.open = false" />
   </div>
 </template>
 
@@ -38,6 +39,8 @@
 import { ref, onMounted, computed } from 'vue';
 import { useAuthStore } from '../stores/authStore';
 import { authService } from '../services/auth.service';
+import { validarImagen } from '../services/storage.service';
+import AccountFeedbackModal from '../components/AccountFeedbackModal.vue';
 
 const authStore = useAuthStore();
 
@@ -52,6 +55,7 @@ const fotoArchivo = ref(null);
 const mensajeError = ref('');
 const mensajeExito = ref('');
 const cargando = ref(false);
+const modal = ref({ open: false, title: '', message: '' });
 
 const fotoPreview = computed(() => {
   if (fotoArchivo.value) {
@@ -80,18 +84,44 @@ onMounted(() => {
 });
 
 const handleFotoChange = (e) => {
-  if (e.target.files && e.target.files[0]) {
-    fotoArchivo.value = e.target.files[0];
+  mensajeError.value = '';
+  try {
+    const archivo = e.target.files?.[0] || null;
+    if (archivo) validarImagen(archivo);
+    fotoArchivo.value = archivo;
+  } catch (err) {
+    fotoArchivo.value = null;
+    e.target.value = '';
+    mensajeError.value = err.message;
   }
 };
 
 const handleUpdate = async () => {
   mensajeError.value = '';
+  mensajeExito.value = '';
   cargando.value = true;
   try {
-    const updated = await authService.updateProfile(authStore.idUsuario, form.value);
+    const correoAnterior = authStore.profile?.correo?.trim().toLowerCase();
+    const correoNuevo = form.value.correo.trim().toLowerCase();
+    const updated = await authService.updateProfile(
+      authStore.idUsuario,
+      form.value,
+      fotoArchivo.value,
+      authStore.user?.id
+    );
     authStore.setSession(authStore.user, { ...authStore.profile, ...updated });
-    mensajeExito.value = 'Perfil actualizado correctamente.';
+    fotoArchivo.value = null;
+
+    if (correoNuevo && correoNuevo !== correoAnterior) {
+      await authService.requestEmailChange(correoNuevo);
+      modal.value = {
+        open: true,
+        title: 'Confirma tu nuevo correo',
+        message: `Actualizamos tu perfil. Enviamos la confirmación a ${correoNuevo}; el correo de tu cuenta cambiará cuando la confirmes.`
+      };
+    } else {
+      mensajeExito.value = 'Perfil actualizado correctamente.';
+    }
   } catch (err) {
     mensajeError.value = err.message || 'Error al actualizar perfil.';
   } finally {

@@ -1,4 +1,5 @@
 import { supabase } from './supabase';
+import { storageService } from './storage.service';
 
 export const actividadesService = {
   /**
@@ -100,21 +101,6 @@ export const actividadesService = {
    * Subir foto de actividad a Supabase Storage
    */
   async subirImagen(file) {
-    const fileExt = file.name.split('.').pop();
-    const fileName = `actividad_${Date.now()}.${fileExt}`;
-    const filePath = `actividades/${fileName}`;
-
-    const { error: uploadError } = await supabase.storage
-      .from('actividades')
-      .upload(filePath, file);
-
-    if (uploadError) {
-      // Si el bucket no existe en desarrollo, retornamos el nombre del archivo para assets
-      console.warn('Storage bucket no disponible, usando nombre local:', uploadError.message);
-      return fileName;
-    }
-
-    const { data } = supabase.storage.from('actividades').getPublicUrl(filePath);
-    return data.publicUrl;
+    return storageService.subirFotoActividad(file);
   }
 };

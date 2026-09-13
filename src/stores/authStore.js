@@ -10,7 +10,9 @@ export const useAuthStore = defineStore('auth', {
   }),
 
   getters: {
-    isAuthenticated: (state) => !!state.profile,
+    // El perfil por sí solo no es una sesión válida: debe venir acompañado del
+    // usuario autenticado por Supabase.
+    isAuthenticated: (state) => !!state.user && !!state.profile,
     // Rol 1 = Administrador, Rol 3 = Empleado
     isAdmin: (state) => state.profile?.roles_idroles === 1,
     isEmpleado: (state) => state.profile?.roles_idroles === 3,
@@ -27,13 +29,14 @@ export const useAuthStore = defineStore('auth', {
         const { data: { session } } = await supabase.auth.getSession();
         if (session?.user?.email) {
           this.user = session.user;
-          this.profile = await authService.getProfile(session.user.email);
+          // auth_user_id no cambia cuando el usuario confirma un nuevo correo.
+          this.profile = await authService.getProfileByAuthUserId(session.user.id);
         } else {
-          // Intentar recuperación desde localStorage mock si no hay Supabase Auth activo
-          const savedProfile = localStorage.getItem('usuario_sesion');
-          if (savedProfile) {
-            this.profile = JSON.parse(savedProfile);
-          }
+          this.user = null;
+          this.profile = null;
+          // Eliminar sesiones visuales de versiones anteriores. Nunca se debe
+          // considerar autenticado a alguien solo por datos en localStorage.
+          localStorage.removeItem('usuario_sesion');
         }
       } catch (err) {
         console.error('Error al inicializar sesión:', err);
@@ -45,7 +48,7 @@ export const useAuthStore = defineStore('auth', {
     setSession(user, profile) {
       this.user = user;
       this.profile = profile;
-      localStorage.setItem('usuario_sesion', JSON.stringify(profile));
+      localStorage.removeItem('usuario_sesion');
     },
 
     async logout() {
