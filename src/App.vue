@@ -1,20 +1,26 @@
 <template>
   <div id="app-wrapper">
-    <Navbar />
+    <Navbar v-if="showNavAndFooter" />
     <main class="main-content">
       <router-view />
     </main>
-    <Footer />
+    <Footer v-if="showNavAndFooter" />
   </div>
 </template>
 
 <script setup>
 import Navbar from './components/Navbar.vue';
 import Footer from './components/Footer.vue';
-import { onMounted } from 'vue';
+import { computed, onMounted } from 'vue';
+import { useRoute } from 'vue-router';
 import { useAuthStore } from './stores/authStore';
 
+const route = useRoute();
 const authStore = useAuthStore();
+
+const showNavAndFooter = computed(() => {
+  return !route.meta?.hideNavAndFooter;
+});
 
 onMounted(async () => {
   await authStore.initSession();

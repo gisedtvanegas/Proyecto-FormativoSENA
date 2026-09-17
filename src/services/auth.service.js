@@ -1,6 +1,22 @@
 import { supabase } from './supabase';
 import { storageService } from './storage.service';
 
+const mensajeErrorCorreoAuth = (error, fallback) => {
+  if (error?.code === 'email_address_not_authorized') {
+    return 'Supabase no está autorizado para enviar a ese correo. Configura un SMTP propio o usa una dirección autorizada en el proyecto.';
+  }
+  if (error?.code === 'over_email_send_rate_limit') {
+    return 'Se alcanzó el límite de correos de Supabase. Espera antes de intentarlo nuevamente.';
+  }
+  if (error?.code === 'over_request_rate_limit') {
+    return 'Se hicieron demasiadas solicitudes. Espera unos minutos e inténtalo de nuevo.';
+  }
+  if (error?.message === 'Error sending email change email') {
+    return 'Supabase no pudo enviar la confirmación. Revisa la configuración SMTP, las plantillas de correo y los límites de envío del proyecto.';
+  }
+  return error?.message || fallback;
+};
+
 export const authService = {
   /**
    * Iniciar sesión con documento o correo y clave
@@ -181,7 +197,7 @@ export const authService = {
     const { data, error } = await supabase.auth.updateUser({ email: correo }, {
       emailRedirectTo: `${window.location.origin}/confirmar-correo`
     });
-    if (error) throw new Error(error.message);
+    if (error) throw new Error(mensajeErrorCorreoAuth(error, 'No fue posible solicitar el cambio de correo.'));
     return data.user;
   },
 
@@ -200,7 +216,7 @@ export const authService = {
     const { error } = await supabase.auth.resetPasswordForEmail(correo, {
       redirectTo: `${window.location.origin}/restablecer-contrasena`
     });
-    if (error) throw new Error(error.message);
+    if (error) throw new Error(mensajeErrorCorreoAuth(error, 'No fue posible enviar la recuperación.'));
   },
 
   async updatePassword(password) {
@@ -217,6 +233,6 @@ export const authService = {
       email: correo,
       options: { emailRedirectTo: `${window.location.origin}/confirmar-correo` }
     });
-    if (error) throw new Error(error.message);
+    if (error) throw new Error(mensajeErrorCorreoAuth(error, 'No fue posible reenviar la confirmación.'));
   }
 };

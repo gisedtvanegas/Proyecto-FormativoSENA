@@ -28,8 +28,8 @@ import AdminRolesView from '../views/admin/AdminRolesView.vue';
 
 const routes = [
   { path: '/', name: 'home', component: HomeView },
-  { path: '/login', name: 'login', component: LoginView, meta: { publicOnly: true } },
-  { path: '/registro', name: 'registro', component: RegisterView, meta: { publicOnly: true } },
+  { path: '/login', name: 'login', component: LoginView, meta: { publicOnly: true, hideNavAndFooter: true } },
+  { path: '/registro', name: 'registro', component: RegisterView, meta: { publicOnly: true, hideNavAndFooter: true } },
   {
     path: '/confirmar-correo',
     name: 'confirmar-correo',

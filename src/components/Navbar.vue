@@ -28,7 +28,7 @@
           <li><router-link to="/">Inicio</router-link></li>
           <li><router-link to="/actividades">Actividad</router-link></li>
           <li><router-link to="/menu">Menú</router-link></li>
-          <li><router-link to="/login">Iniciar Sesión</router-link></li>
+          <li><router-link to="/login" class="nav-btn-login">Iniciar Sesión</router-link></li>
           <li><router-link to="/registro">Registrarse</router-link></li>
         </template>
 

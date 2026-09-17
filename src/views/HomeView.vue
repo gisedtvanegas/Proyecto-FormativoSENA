@@ -1,3 +1,4 @@
+
 <template>
   <div class="home-view">
     <Carousel />
@@ -40,12 +41,12 @@
     <section class="galeria-cafeteria" aria-labelledby="titulo-galeria-cafeteria">
       <h2 id="titulo-galeria-cafeteria">Conoce nuestra cafeteria!</h2>
       <div class="galeria-cafeteria-grid">
-        <figure class="galeria-cafeteria-tarjeta"><img src="../assets/img/prueba.jpg" alt="Espacio de la cafetería"></figure>
-        <figure class="galeria-cafeteria-tarjeta"><img src="../assets/img/foto.jpg" alt="Entrada de Casa y Jardín"></figure>
+        <figure class="galeria-cafeteria-tarjeta"><img src="../assets/img/pordentro.jpeg" alt="Espacio de la cafetería"></figure>
+        <figure class="galeria-cafeteria-tarjeta"><img src="../assets/img/sillitas.jpeg" alt="Entrada de Casa y Jardín"></figure>
         <figure class="galeria-cafeteria-tarjeta"><img src="../assets/img/fotoprueba.jpg" alt="Mesas de la cafetería"></figure>
-        <figure class="galeria-cafeteria-tarjeta"><img src="../assets/img/prueba.prueba.jpg" alt="Ambiente de la cafetería"></figure>
-        <figure class="galeria-cafeteria-tarjeta"><img src="../assets/img/ceramica.jpg" alt="Actividad de cerámica en Casa y Jardín"></figure>
-        <figure class="galeria-cafeteria-tarjeta"><img src="../assets/img/ola_1.jpg" alt="Rincón de Casa y Jardín"></figure>
+        <figure class="galeria-cafeteria-tarjeta"><img src="../assets/img/local.jpeg" alt="Ambiente de la cafetería"></figure>
+        <figure class="galeria-cafeteria-tarjeta"><img src="../assets/img/prueba.jpg" alt="Actividad de cerámica en Casa y Jardín"></figure>
+        <figure class="galeria-cafeteria-tarjeta"><img src="../assets/img/platitos.jpeg" alt="Rincón de Casa y Jardín"></figure>
       </div>
     </section>
 
