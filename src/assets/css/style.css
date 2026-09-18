@@ -66,6 +66,13 @@ body::before {
   border: 1px solid rgba(255,255,255,0.65);
   border-radius: 24px 24px 0 0;
   box-sizing: border-box;
+  transition: transform 0.45s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.35s ease;
+}
+
+.barrainicio.barrainicio--hidden {
+  transform: translate(-50%, -150%);
+  opacity: 0;
+  pointer-events: none;
 }
 
 .barrainicioprin {
@@ -207,6 +214,11 @@ body::before {
   text-shadow: 2px 2px 8px rgba(0,0,0,0.6); 
 }
 
+.mariposa-ancla {
+  display: inline-block;
+  position: relative;
+}
+
 /* Botón de bienvenida */
 .bienvenida a {
     text-decoration: none;
@@ -246,27 +258,69 @@ body::before {
 /* Historia */
 .historia {
   background-color: var(--historia);
-  width: min(1300px, calc(100% - 48px)); 
-  margin: 0 auto 0px;                   
+  width: min(1300px, calc(100% - 48px));
+  margin: 0 auto;
   min-height: 200px;
-  padding: 120px 100px;  
-  box-sizing: border-box; 
+  padding: 80px 100px;
+  box-sizing: border-box;
+
+  /* Layout 2 columnas: imagen izq, texto der */
+  display: grid;
+  grid-template-columns: 1fr 1.2fr;
+  gap: 60px;
+  align-items: center;
+}
+
+/* Columna izquierda: mancha orgánica azul oscuro con el perrito */
+.historia-imagen-blob {
+  position: relative;
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+}
+
+.historia-blob {
+  width: 100%;
+  max-width: 400px;
+  aspect-ratio: 3 / 4;
+  background: #1a3a4a;
+  border-radius: 62% 38% 70% 30% / 45% 55% 45% 55%;
+  overflow: hidden;
+  margin: 0 auto;
+  box-shadow: 0 20px 50px rgba(20, 62, 94, 0.28);
+}
+
+.historia-blob img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center top;
+  display: block;
+}
+
+/* Columna derecha: texto */
+.historia-texto {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: 16px;
 }
 
 .historia h2 {
   font-size: 2rem;
   color: var(--letra--gnr);
-  margin-bottom: 20px;
-  text-align: center;
+  margin: 0 0 8px;
+  text-align: left;
 }
 
 .historia p {
-  justify-content: center;
   font-family: "Montagu Slab", serif;
-  display: flex;
-  font-size: 1.1rem;
-  line-height: 2;
+  font-size: 1.05rem;
+  line-height: 1.9;
+  color: var(--letra--gnr);
+  margin: 0;
 }
+
 
 /*Actividades*/
 
@@ -1196,14 +1250,14 @@ body::before {
   box-shadow: 0 8px 20px rgba(197, 225, 165, 0.65);
 }
 
-/* Galería de la página de inicio */
+/* Galería de la página de inicio — estilos base (grid gestionado por GaleriaCarrusel.vue) */
 .galeria-cafeteria {
   width: min(1300px, calc(100% - 48px));
   margin: 0 auto;
-  padding: 64px 40px;
   box-sizing: border-box;
-  background: #fff8ef;
+  background: #2a7090;
   text-align: center;
+  overflow: hidden;
 }
 
 .galeria-cafeteria h2 {
@@ -1213,45 +1267,6 @@ body::before {
   font-size: clamp(1.8rem, 3.5vw, 2.5rem);
 }
 
-.galeria-cafeteria-grid {
-  display: grid;
-  grid-template-columns: repeat(3, minmax(0, 1fr));
-  width: min(100%, 960px);
-  margin: 0 auto;
-  gap: 18px;
-}
-
-.galeria-cafeteria-tarjeta {
-  margin: 0;
-  aspect-ratio: 4 / 3;
-  box-sizing: border-box;
-  overflow: hidden;
-  border: 3px solid #f3a9b9;
-  border-radius: 8px;
-  background: #fff;
-  box-shadow: 0 3px 8px rgba(20, 62, 94, 0.12);
-}
-
-.galeria-cafeteria-tarjeta img {
-  display: block;
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-  transition: transform 0.3s ease;
-}
-
-.galeria-cafeteria-tarjeta:hover img {
-  transform: scale(1.02);
-}
-
-@media (max-width: 900px) {
-  .galeria-cafeteria-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
-}
-
-@media (max-width: 560px) {
-  .galeria-cafeteria { width: 100%; padding: 40px 16px; }
-  .galeria-cafeteria-grid { grid-template-columns: 1fr; gap: 16px; }
-}
 
 /* Botón hamburguesa - sólo visible en móvil */
 .nav-toggle {
@@ -1374,18 +1389,29 @@ body::before {
 
   /* --- Barra de inicio: modo fila logo + hamburguesa --- */
   .barrainicio {
-    position: relative;
-    top: 0;
-    left: 0;
-    transform: none;
-    width: 100%;
-    border-radius: 0;
-    flex-direction: row;
+    width: min(1300px, calc(100% - 48px));
+    position: fixed;
+    top: 20px;
+    left: 50%;
+    transform: translateX(-50%);
+    background: rgba(245, 255, 235, 0.68);
+    backdrop-filter: blur(16px);
+    display: flex;
     justify-content: space-between;
     align-items: center;
-    padding: 14px 20px;
+    padding: 18px 34px;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+    z-index: 1000;
+    border: 1px solid rgba(255,255,255,0.65);
+    border-radius: 24px 24px 0 0;
     box-sizing: border-box;
-    gap: 0;
+    transition: transform 0.45s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.35s ease;
+  }
+
+  .barrainicio.barrainicio--hidden {
+    transform: translate(-50%, -150%);
+    opacity: 0;
+    pointer-events: none;
   }
 
   /* Ocultar nav por defecto; JS lo muestra */
@@ -1514,7 +1540,18 @@ body::before {
   /* --- Historia --- */
   .historia {
     width: 100%;
-    padding: 36px 20px;
+    padding: 48px 20px;
+    grid-template-columns: 1fr;
+    gap: 36px;
+  }
+
+  .historia-blob {
+    max-width: 280px;
+    aspect-ratio: 1 / 1;
+  }
+
+  .historia h2 {
+    text-align: center;
   }
 
   .historia p {

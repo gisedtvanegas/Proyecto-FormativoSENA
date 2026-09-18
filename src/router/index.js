@@ -46,17 +46,17 @@ const routes = [
   { path: '/perfil', name: 'perfil', component: UserProfileView, meta: { requiresAuth: true } },
 
   // Rutas de Administración (Admin o Empleado)
-  { path: '/admin', name: 'admin-dashboard', component: AdminDashboardView, meta: { requiresAdminOrEmpleado: true } },
-  { path: '/admin/actividades', name: 'admin-actividades', component: AdminActivitiesView, meta: { requiresAdminOrEmpleado: true } },
-  { path: '/admin/menu', name: 'admin-menu', component: AdminMenuView, meta: { requiresAdminOrEmpleado: true } },
-  { path: '/admin/reservas', name: 'admin-reservas', component: AdminReservationsView, meta: { requiresAdminOrEmpleado: true } },
-  { path: '/admin/disponibilidad', name: 'admin-disponibilidad', component: AdminAvailabilityView, meta: { requiresAdminOrEmpleado: true } },
-  { path: '/admin/horarios', name: 'admin-horarios', component: AdminSchedulesView, meta: { requiresAdminOrEmpleado: true } },
-  { path: '/admin/precios', name: 'admin-precios', component: AdminPricesView, meta: { requiresAdminOrEmpleado: true } },
-  { path: '/admin/tipos-actividad', name: 'admin-tipos-actividad', component: AdminActivityTypesView, meta: { requiresAdminOrEmpleado: true } },
-  { path: '/admin/tipos-doc', name: 'admin-tipos-doc', component: AdminDocTypesView, meta: { requiresAdminOrEmpleado: true } },
-  { path: '/admin/usuarios', name: 'admin-usuarios', component: AdminUsersView, meta: { requiresAdminOrEmpleado: true } },
-  { path: '/admin/roles', name: 'admin-roles', component: AdminRolesView, meta: { requiresAdminOrEmpleado: true } },
+  { path: '/admin', name: 'admin-dashboard', component: AdminDashboardView, meta: { requiresAdminOrEmpleado: true, hideFooter: true } },
+  { path: '/admin/actividades', name: 'admin-actividades', component: AdminActivitiesView, meta: { requiresAdminOrEmpleado: true, hideFooter: true } },
+  { path: '/admin/menu', name: 'admin-menu', component: AdminMenuView, meta: { requiresAdminOrEmpleado: true, hideFooter: true } },
+  { path: '/admin/reservas', name: 'admin-reservas', component: AdminReservationsView, meta: { requiresAdminOrEmpleado: true, hideFooter: true } },
+  { path: '/admin/disponibilidad', name: 'admin-disponibilidad', component: AdminAvailabilityView, meta: { requiresAdminOrEmpleado: true, hideFooter: true } },
+  { path: '/admin/horarios', name: 'admin-horarios', component: AdminSchedulesView, meta: { requiresAdminOrEmpleado: true, hideFooter: true } },
+  { path: '/admin/precios', name: 'admin-precios', component: AdminPricesView, meta: { requiresAdminOrEmpleado: true, hideFooter: true } },
+  { path: '/admin/tipos-actividad', name: 'admin-tipos-actividad', component: AdminActivityTypesView, meta: { requiresAdminOrEmpleado: true, hideFooter: true } },
+  { path: '/admin/tipos-doc', name: 'admin-tipos-doc', component: AdminDocTypesView, meta: { requiresAdminOrEmpleado: true, hideFooter: true } },
+  { path: '/admin/usuarios', name: 'admin-usuarios', component: AdminUsersView, meta: { requiresAdminOrEmpleado: true, hideFooter: true } },
+  { path: '/admin/roles', name: 'admin-roles', component: AdminRolesView, meta: { requiresAdminOrEmpleado: true, hideFooter: true } },
 
   // Catch-all 404
   { path: '/:pathMatch(.*)*', redirect: '/' }

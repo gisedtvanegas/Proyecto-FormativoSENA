@@ -64,7 +64,6 @@
         <table class="tabla-custom">
           <thead>
             <tr>
-              <th>ID</th>
               <th>Nombre Completo</th>
               <th>Documento</th>
               <th>Correo</th>
@@ -75,7 +74,6 @@
           </thead>
           <tbody>
             <tr v-for="u in lista" :key="u.idusuarios">
-              <td>#{{ u.idusuarios }}</td>
               <td>{{ u.nombre }} {{ u.apellido }}</td>
               <td>{{ u.documento }}</td>
               <td>{{ u.correo }}</td>

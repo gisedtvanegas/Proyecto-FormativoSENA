@@ -14,7 +14,7 @@
       <div v-if="mensajeError" class="alerta error">{{ mensajeError }}</div>
       <div v-if="mensajeExito" class="alerta exito">{{ mensajeExito }}</div>
 
-      <form @submit.prevent="handleGuardar" class="grid-form">
+      <form @submit.prevent="handleGuardar" class="grid-form" enctype="multipart/form-data">
         <div class="campo">
           <label>Nombre del Producto:</label>
           <input type="text" v-model="form.nombre" required :disabled="authStore.isEmpleado" />
@@ -31,8 +31,9 @@
         </div>
 
         <div class="campo">
-          <label>Nombre Imagen / Archivo:</label>
-          <input type="text" v-model="form.imagen_url" placeholder="ej. foto.jpg" :disabled="authStore.isEmpleado" />
+          <label>Foto del Producto:</label>
+          <input type="file" accept="image/*" @change="handleFormFotoFile" :disabled="authStore.isEmpleado" />
+          <small style="color:#6b8e6b;font-size:.82rem;">Opcional · JPG, PNG, WEBP (máx. 5 MB)</small>
         </div>
 
         <div class="campo acciones-form" v-if="!authStore.isEmpleado">
@@ -50,21 +51,40 @@
         <table class="tabla-custom">
           <thead>
             <tr>
-              <th>ID</th>
               <th>Nombre</th>
               <th>Descripción</th>
+              <th>Foto actual</th>
+              <th>Nueva foto</th>
               <th>Precio</th>
-              <th>Imagen</th>
               <th>Acciones</th>
             </tr>
           </thead>
           <tbody>
             <tr v-for="prod in lista" :key="prod.idproducto">
-              <td>#{{ prod.idproducto }}</td>
               <td>{{ prod.nombre }}</td>
               <td>{{ prod.descripcion }}</td>
+              <td class="td-foto-actual">
+                <img
+                  v-if="prod.imagen || prod.imagen_url"
+                  :src="getImagenUrl(prod.imagen || prod.imagen_url)"
+                  :alt="prod.nombre"
+                  class="thumb-producto"
+                  @error="e => e.target.style.display='none'"
+                />
+                <span v-else class="sin-foto">Sin foto</span>
+              </td>
+              <td>
+                <template v-if="!authStore.isEmpleado">
+                  <input
+                    type="file"
+                    accept="image/*"
+                    @change="e => handleFotoRowFile(prod, e)"
+                  />
+                  <small style="color:#6b8e6b;font-size:.75rem;">Deja vacío para conservar la actual</small>
+                </template>
+                <span v-else class="texto-lectura">—</span>
+              </td>
               <td>${{ formatPrecio(prod.precio) }}</td>
-              <td>{{ prod.imagen_url || '-' }}</td>
               <td>
                 <template v-if="!authStore.isEmpleado">
                   <button @click="cargarEdicion(prod)" class="btn-accion edit">Editar</button>
@@ -84,6 +104,7 @@
 import { ref, onMounted } from 'vue';
 import { useAuthStore } from '../../stores/authStore';
 import { productosService } from '../../services/productos.service';
+import { storageService, validarImagen } from '../../services/storage.service';
 import ReadOnlyNotice from '../../components/ReadOnlyNotice.vue';
 
 const authStore = useAuthStore();
@@ -93,7 +114,7 @@ const form = ref({
   nombre: '',
   descripcion: '',
   precio: '',
-  imagen_url: ''
+  imagen: ''
 });
 
 const modoEdicion = ref(false);
@@ -101,6 +122,11 @@ const lista = ref([]);
 const cargando = ref(true);
 const mensajeError = ref('');
 const mensajeExito = ref('');
+
+// Archivo del formulario (crear/editar)
+const formFotoArchivo = ref(null);
+// Mapa: idproducto → File para cambios inline en la tabla
+const fotosPorProducto = new Map();
 
 onMounted(async () => {
   await cargarDatos();
@@ -117,26 +143,64 @@ const cargarDatos = async () => {
   }
 };
 
+// Maneja selección de foto en el formulario
+const handleFormFotoFile = (e) => {
+  try {
+    const file = e.target.files[0] || null;
+    if (file) validarImagen(file);
+    formFotoArchivo.value = file;
+  } catch (err) {
+    formFotoArchivo.value = null;
+    e.target.value = '';
+    mensajeError.value = err.message;
+  }
+};
+
+// Maneja selección de foto en cada fila de la tabla
+const handleFotoRowFile = async (prod, e) => {
+  try {
+    const file = e.target.files[0] || null;
+    if (file) validarImagen(file);
+    if (file) {
+      mensajeError.value = '';
+      const url = await storageService.subirFotoMenu(file);
+      await productosService.actualizar(prod.idproducto, { ...prod, imagen: url });
+      mensajeExito.value = `Foto de "${prod.nombre}" actualizada correctamente`;
+      await cargarDatos();
+    }
+  } catch (err) {
+    fotosPorProducto.delete(prod.idproducto);
+    e.target.value = '';
+    mensajeError.value = err.message;
+  }
+};
+
 const cargarEdicion = (prod) => {
   modoEdicion.value = true;
+  formFotoArchivo.value = null;
   form.value = {
     idproducto: prod.idproducto,
     nombre: prod.nombre,
     descripcion: prod.descripcion,
     precio: prod.precio,
-    imagen_url: prod.imagen_url || ''
+    imagen: prod.imagen || prod.imagen_url || ''
   };
 };
 
 const resetForm = () => {
   modoEdicion.value = false;
-  form.value = { idproducto: null, nombre: '', descripcion: '', precio: '', imagen_url: '' };
+  formFotoArchivo.value = null;
+  form.value = { idproducto: null, nombre: '', descripcion: '', precio: '', imagen: '' };
 };
 
 const handleGuardar = async () => {
   if (authStore.isEmpleado) return;
   mensajeError.value = '';
   try {
+    // Si se seleccionó un archivo nuevo, subirlo primero
+    if (formFotoArchivo.value) {
+      form.value.imagen = await storageService.subirFotoMenu(formFotoArchivo.value);
+    }
     if (modoEdicion.value) {
       await productosService.actualizar(form.value.idproducto, form.value);
       mensajeExito.value = 'Producto actualizado correctamente';
@@ -160,6 +224,13 @@ const handleEliminar = async (id) => {
   } catch (err) {
     mensajeError.value = err.message;
   }
+};
+
+const getImagenUrl = (url) => {
+  if (!url) return '';
+  if (url.startsWith('http')) return url;
+  try { return new URL(`../../assets/img/${url}`, import.meta.url).href; }
+  catch (e) { return ''; }
 };
 
 const formatPrecio = (precio) => precio ? Number(precio).toLocaleString('es-CO') : '0';
@@ -188,4 +259,8 @@ const formatPrecio = (precio) => precio ? Number(precio).toLocaleString('es-CO')
 .alerta.error { background: #f8d7da; color: #721c24; }
 .alerta.exito { background: #d4edda; color: #155724; }
 .texto-lectura { color: #888; font-style: italic; }
+.td-foto-actual { width: 80px; text-align: center; }
+.thumb-producto { width: 64px; height: 48px; object-fit: cover; border-radius: 8px; border: 1px solid #ddd; display: block; margin: 0 auto; }
+.sin-foto { font-size: 0.78rem; color: #aaa; font-style: italic; }
+.input-nueva-foto { width: 130px; padding: 6px 8px; border-radius: 8px; border: 1px solid #ccc; font-size: 0.85rem; box-sizing: border-box; }
 </style>

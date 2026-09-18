@@ -43,5 +43,11 @@ export const storageService = {
     const id = globalThis.crypto?.randomUUID?.() || `${Date.now()}-${Math.random().toString(36).slice(2)}`;
     const path = `actividades/${id}.${extensionImagen(file)}`;
     return subirArchivo('actividades', path, file);
+  },
+
+  async subirFotoMenu(file) {
+    const id = globalThis.crypto?.randomUUID?.() || `${Date.now()}-${Math.random().toString(36).slice(2)}`;
+    const path = `menu/${id}.${extensionImagen(file)}`;
+    return subirArchivo('menu', path, file);
   }
 };

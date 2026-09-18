@@ -5,7 +5,7 @@
       
       <section class="tarjetas-menu" aria-label="Productos del menú">
         <article class="tarjeta-menu" v-for="producto in productos" :key="producto.idproducto">
-          <img :src="getImagenUrl(producto.imagen_url)" :alt="producto.nombre">
+          <img :src="getImagenUrl(producto.imagen || producto.imagen_url)" :alt="producto.nombre">
           <div class="tarjeta-menu-contenido">
             <h3>{{ producto.nombre }}</h3>
             <p>{{ producto.descripcion }}</p>

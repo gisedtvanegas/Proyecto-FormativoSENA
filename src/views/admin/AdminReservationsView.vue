@@ -15,7 +15,6 @@
         <table class="tabla-custom">
           <thead>
             <tr>
-              <th>ID</th>
               <th>Cliente</th>
               <th>Documento</th>
               <th>Actividad</th>
@@ -28,7 +27,6 @@
           </thead>
           <tbody>
             <tr v-for="r in reservas" :key="r.idreserva">
-              <td>#{{ r.idreserva }}</td>
               <td>{{ r.usuario ? `${r.usuario.nombre} ${r.usuario.apellido}` : 'Usuario #' + r.usuarios_idusuarios }}</td>
               <td>{{ r.usuario?.documento || '-' }}</td>
               <td>{{ r.actividad?.descripcion_actividad || '-' }}</td>

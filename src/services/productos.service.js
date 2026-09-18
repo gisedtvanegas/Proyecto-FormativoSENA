@@ -25,7 +25,7 @@ export const productosService = {
         nombre: productoData.nombre,
         descripcion: productoData.descripcion,
         precio: parseFloat(productoData.precio),
-        imagen_url: productoData.imagen_url || null,
+        imagen: productoData.imagen || productoData.imagen_url || null,
         activo: true
       })
       .select()
@@ -45,7 +45,7 @@ export const productosService = {
         nombre: productoData.nombre,
         descripcion: productoData.descripcion,
         precio: parseFloat(productoData.precio),
-        imagen_url: productoData.imagen_url || null
+        imagen: productoData.imagen || productoData.imagen_url || null
       })
       .eq('idproducto', id)
       .eq('activo', true)

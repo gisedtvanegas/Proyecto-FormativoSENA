@@ -14,7 +14,7 @@
         <!-- Títulos -->
         <div class="login-title-box">
           <h1 class="login-main-title">Iniciar Sesión</h1>
-          <p class="login-subtitle">Ingresa a tu cuenta</p>
+          <p class="login-subtitle">Ingresa con tu documento o correo electrónico</p>
         </div>
 
         <!-- Formulario -->
@@ -24,16 +24,17 @@
               type="text"
               name="usuario"
               id="usuario"
-              placeholder="Documento"
+              placeholder="Documento o Correo"
               v-model="usuario"
+              @input="onUsuarioInput"
               autocomplete="username"
               required
             />
           </div>
 
-          <div class="input-group">
+          <div class="input-group password-group">
             <input
-              type="password"
+              :type="mostrarClave ? 'text' : 'password'"
               name="pass"
               id="pass"
               placeholder="Contraseña"
@@ -41,19 +42,45 @@
               autocomplete="current-password"
               required
             />
+            <button
+              type="button"
+              class="toggle-pass-btn"
+              @click="mostrarClave = !mostrarClave"
+              :aria-label="mostrarClave ? 'Ocultar contraseña' : 'Ver contraseña'"
+            >
+              <!-- Ojo abierto -->
+              <svg v-if="!mostrarClave" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
+                <circle cx="12" cy="12" r="3"></circle>
+              </svg>
+              <!-- Ojo cerrado -->
+              <svg v-else width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"></path>
+                <line x1="1" y1="1" x2="23" y2="23"></line>
+              </svg>
+            </button>
           </div>
 
           <div class="login-options">
             <router-link to="/recuperar-clave" class="forgot-link">
-              ¿Te olvidaste de la contraseña?
+              ¿Olvidaste tu contraseña?
             </router-link>
           </div>
 
           <div v-if="mensajeError" class="login-alert error">
-            {{ mensajeError }}
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <circle cx="12" cy="12" r="10"></circle>
+              <line x1="12" y1="8" x2="12" y2="12"></line>
+              <line x1="12" y1="16" x2="12.01" y2="16"></line>
+            </svg>
+            <span>{{ mensajeError }}</span>
           </div>
+
           <div v-if="mensajeExito" class="login-alert success">
-            {{ mensajeExito }}
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+              <polyline points="20 6 9 17 4 12"></polyline>
+            </svg>
+            <span>{{ mensajeExito }}</span>
           </div>
 
           <!-- Botón Principal Verde -->
@@ -78,7 +105,11 @@
               <router-link to="/registro" class="text-link">Regístrate</router-link>
             </p>
             <button type="button" class="btn-back-home" @click="goHome">
-              &#8592; Volver al inicio
+              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                <line x1="19" y1="12" x2="5" y2="12"></line>
+                <polyline points="12 19 5 12 12 5"></polyline>
+              </svg>
+              <span>Volver al inicio</span>
             </button>
           </div>
         </form>
@@ -105,9 +136,15 @@ const pass = ref('');
 const mensajeError = ref('');
 const mensajeExito = ref('');
 const cargando = ref(false);
+const mostrarClave = ref(false);
 
 const authStore = useAuthStore();
 const router = useRouter();
+
+const onUsuarioInput = (e) => {
+  // Limpiar espacios en blanco innecesarios
+  usuario.value = e.target.value.trim();
+};
 
 const goRegister = () => {
   router.push('/registro');
@@ -119,13 +156,25 @@ const goHome = () => {
 
 const handleLogin = async () => {
   mensajeError.value = '';
+  mensajeExito.value = '';
+
+  if (!usuario.value) {
+    mensajeError.value = 'Por favor ingresa tu documento o correo.';
+    return;
+  }
+
+  if (!pass.value) {
+    mensajeError.value = 'Por favor ingresa tu contraseña.';
+    return;
+  }
+
   cargando.value = true;
 
   try {
     const { user, profile } = await authService.login(usuario.value, pass.value);
     authStore.setSession(user, profile);
 
-    mensajeExito.value = `Bienvenido: ${profile.nombre}`;
+    mensajeExito.value = `¡Bienvenido, ${profile.nombre}!`;
 
     setTimeout(() => {
       if (profile.roles_idroles === 1 || profile.roles_idroles === 3) {
@@ -148,7 +197,12 @@ const handleLogin = async () => {
   display: flex;
   align-items: center;
   justify-content: center;
-  background-color: #f7f9fa;
+  background:
+    radial-gradient(circle at center,
+      rgba(137, 232, 189, 0.85) 0%,
+      rgba(231, 255, 196, 0.84) 45%,
+      rgba(0, 109, 156, 0.82) 100%),
+    url("../assets/img/ola_1.jpg") center / cover fixed;
   padding: 30px 20px;
   box-sizing: border-box;
 }
@@ -212,9 +266,9 @@ const handleLogin = async () => {
 }
 
 .login-subtitle {
-  font-size: 1rem;
+  font-size: 0.95rem;
   font-weight: 600;
-  color: #374151;
+  color: #4b5563;
   margin: 0;
 }
 
@@ -225,6 +279,7 @@ const handleLogin = async () => {
 
 .input-group {
   margin-bottom: 14px;
+  position: relative;
 }
 
 .input-group input {
@@ -250,6 +305,30 @@ const handleLogin = async () => {
   box-shadow: 0 0 0 3px rgba(13, 134, 80, 0.14);
 }
 
+.password-group input {
+  padding-right: 50px;
+}
+
+.toggle-pass-btn {
+  position: absolute;
+  right: 16px;
+  top: 50%;
+  transform: translateY(-50%);
+  background: transparent;
+  border: none;
+  color: #6b7280;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 4px;
+  transition: color 0.2s;
+}
+
+.toggle-pass-btn:hover {
+  color: #111827;
+}
+
 .login-options {
   display: flex;
   justify-content: flex-end;
@@ -261,7 +340,7 @@ const handleLogin = async () => {
   font-size: 0.85rem;
   color: #4b5563;
   text-decoration: none;
-  font-weight: 500;
+  font-weight: 600;
   transition: color 0.2s ease;
 }
 
@@ -276,7 +355,15 @@ const handleLogin = async () => {
   font-size: 0.88rem;
   font-weight: 600;
   margin-bottom: 16px;
-  text-align: center;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  animation: fade-in 0.2s ease;
+}
+
+@keyframes fade-in {
+  from { opacity: 0; transform: translateY(-4px); }
+  to { opacity: 1; transform: translateY(0); }
 }
 
 .login-alert.error {
@@ -393,6 +480,9 @@ const handleLogin = async () => {
   cursor: pointer;
   padding: 6px 10px;
   transition: transform 0.2s ease, color 0.2s ease;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
 }
 
 .btn-back-home:hover {
@@ -444,4 +534,3 @@ const handleLogin = async () => {
   }
 }
 </style>
-
