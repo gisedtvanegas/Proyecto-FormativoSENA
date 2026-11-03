@@ -10,8 +10,23 @@
       </template>
       <template v-else>
         <h1>No pudimos confirmar el correo</h1>
-        <p>{{ error || 'El enlace ya venció o no es válido. Solicita uno nuevo.' }}</p>
-        <form @submit.prevent="reenviar"><input v-model="correo" type="email" placeholder="Tu correo electrónico" required><button :disabled="enviando">{{ enviando ? 'Enviando…' : 'Reenviar confirmación' }}</button></form>
+        <p>{{ error || 'El enlace ya venció o no es válido. Solicita uno nuevo.' }}</p>       
+        <form @submit.prevent="reenviar">
+          <label for="correo">Correo electrónico</label>
+
+          <input
+            id="correo"
+            v-model="correo"
+            type="email"
+            placeholder="Tu correo electrónico"
+            autocomplete="email"
+            required
+          >
+
+          <button :disabled="enviando">
+            {{ enviando ? 'Enviando...' : 'Reenviar confirmación' }}
+          </button>
+        </form>
       </template>
     </div>
   </div>

@@ -38,8 +38,8 @@ export const usuariosService = {
         documento: userData.documento,
         telefono: userData.telefono,
         correo: userData.correo,
-        tipo_documento_idtipo_documento: parseInt(userData.tipo_documento_idtipo_documento),
-        roles_idroles: parseInt(userData.roles_idroles)
+        tipo_documento_idtipo_documento: Number.parseInt(userData.tipo_documento_idtipo_documento),
+        roles_idroles: Number.parseInt(userData.roles_idroles)
       })
       .eq('idusuarios', id)
       .eq('activo', true)

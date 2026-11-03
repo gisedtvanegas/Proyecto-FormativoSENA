@@ -156,8 +156,8 @@ export const reservasService = {
    */
   async cancelarReserva(idReserva, idUsuario) {
     const { data, error } = await supabase.rpc('cancelar_reserva_con_anticipacion', {
-      p_reserva_id: parseInt(idReserva),
-      p_usuario_id: parseInt(idUsuario)
+      p_reserva_id: Number.parseInt(idReserva),
+      p_usuario_id: Number.parseInt(idUsuario)
     });
 
     if (error) throw new Error(error.message);

@@ -543,7 +543,6 @@ body::before {
   text-align: center;
   font-size: 14px;
   box-sizing: border-box;
-  margin-top: auto;
   width: min(1300px, calc(100% - 48px)); 
   margin: 0 auto 20px;                   
   padding: 20px;    
