@@ -23,8 +23,10 @@
             required
           >
 
-          <button :disabled="enviando">
-            {{ enviando ? 'Enviando...' : 'Reenviar confirmación' }}
+          <button type="submit"
+              :disabled="enviando"
+            >
+              {{ enviando ? 'Enviando...' : 'Reenviar confirmación' }}
           </button>
         </form>
       </template>
