@@ -43,11 +43,11 @@ export const reservasService = {
   async crearReserva(reservaData) {
     validarDatosReserva(reservaData);
     const { data, error } = await supabase.rpc('crear_reserva_segura', {
-      p_num_personas: parseInt(reservaData.num_personas),
+      p_num_personas: Number.parseInt(reservaData.num_personas),
       p_hora: reservaData.hora,
       p_fecha: reservaData.fecha,
-      p_usuario_id: parseInt(reservaData.usuarios_idusuarios),
-      p_actividad_id: parseInt(reservaData.actividad_idactividad)
+      p_usuario_id: Number.parseInt(reservaData.usuarios_idusuarios),
+      p_actividad_id: Number.parseInt(reservaData.actividad_idactividad)
     });
 
     if (error) {
@@ -71,12 +71,12 @@ export const reservasService = {
     }
 
     const { data, error } = await supabase.rpc('actualizar_reserva_con_cupo', {
-      p_reserva_id: parseInt(reservaData.idreserva),
-      p_num_personas: parseInt(reservaData.num_personas),
+      p_reserva_id: Number.parseInt(reservaData.idreserva),
+      p_num_personas: Number.parseInt(reservaData.num_personas),
       p_hora: reservaData.hora,
       p_fecha: reservaData.fecha,
-      p_usuario_id: parseInt(reservaData.usuarios_idusuarios),
-      p_actividad_id: parseInt(reservaData.actividad_idactividad)
+      p_usuario_id: Number.parseInt(reservaData.usuarios_idusuarios),
+      p_actividad_id: Number.parseInt(reservaData.actividad_idactividad)
     });
 
     if (error) {
@@ -171,8 +171,8 @@ export const reservasService = {
     const { data, error } = await supabase
       .from('reserva')
       .update({
-        estado_reserva_idestado_reserva: parseInt(idEstado),
-        pagos_idpagos: parseInt(idPago)
+        estado_reserva_idestado_reserva: Number.parseInt(idEstado),
+        pagos_idpagos: Number.parseInt(idPago)
       })
       .eq('idreserva', idReserva)
       .eq('activo', true)

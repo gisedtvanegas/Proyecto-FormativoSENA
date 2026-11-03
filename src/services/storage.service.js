@@ -40,14 +40,22 @@ export const storageService = {
   },
 
   async subirFotoActividad(file) {
-    const id = globalThis.crypto?.randomUUID?.() || `${Date.now()}-${Math.random().toString(36).slice(2)}`;
+    validarImagen(file);
+
+    const id = generarIdSeguro();
+
     const path = `actividades/${id}.${extensionImagen(file)}`;
+
     return subirArchivo('actividades', path, file);
   },
 
   async subirFotoMenu(file) {
-    const id = globalThis.crypto?.randomUUID?.() || `${Date.now()}-${Math.random().toString(36).slice(2)}`;
+    validarImagen(file);
+
+    const id = generarIdSeguro();
+
     const path = `menu/${id}.${extensionImagen(file)}`;
+
     return subirArchivo('menu', path, file);
   }
 };

@@ -107,8 +107,8 @@ export const authService = {
         fecha_nac: userData.fecha_nac,
         fecha_cad: userData.fecha_cad,
         checkbox: userData.checkbox || false,
-        tipo_documento_idtipo_documento: parseInt(userData.tipo_documento_idtipo_documento),
-        roles_idroles: parseInt(userData.roles_idroles || 2), // 2 = Usuario por defecto
+        tipo_documento_idtipo_documento: Number.parseInt(userData.tipo_documento_idtipo_documento),
+        roles_idroles: Number.parseInt(userData.roles_idroles || 2), // 2 = Usuario por defecto
         activo: true
       })
       .select()

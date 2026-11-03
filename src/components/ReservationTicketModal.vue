@@ -175,7 +175,7 @@ const formatearFecha = (fechaStr) => {
   const [year, month, day] = fechaStr.split('-');
   if (!year || !month || !day) return fechaStr;
   const meses = ['Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo', 'Junio', 'Julio', 'Agosto', 'Septiembre', 'Octubre', 'Noviembre', 'Diciembre'];
-  return `${day} de ${meses[parseInt(month, 10) - 1]}, ${year}`;
+  return `${day} de ${meses[Number.parseInt(month, 10) - 1]}, ${year}`;
 };
 
 const imprimirTicket = () => {

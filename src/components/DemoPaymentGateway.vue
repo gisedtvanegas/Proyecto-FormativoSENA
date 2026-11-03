@@ -467,7 +467,7 @@ const formatearFecha = (fechaStr) => {
   const [year, month, day] = fechaStr.split('-');
   if (!year || !month || !day) return fechaStr;
   const meses = ['Ene', 'Feb', 'Mar', 'Abr', 'May', 'Jun', 'Jul', 'Ago', 'Sep', 'Oct', 'Nov', 'Dic'];
-  return `${day} de ${meses[parseInt(month, 10) - 1]} de ${year}`;
+  return `${day} de ${meses[Number.parseInt(month, 10) - 1]} de ${year}`;
 };
 
 const formatearNumeroTarjeta = (e) => {

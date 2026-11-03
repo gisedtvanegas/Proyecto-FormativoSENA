@@ -80,9 +80,9 @@ export const parametrosService = {
   async crearDisponibilidad(dispData) {
     const { data, error } = await supabase.from('disponibilidad').insert({
       fecha: dispData.fecha,
-      cupo_total: parseInt(dispData.cupo_total || 30),
-      cupo_disponible: parseInt(dispData.cupo_disponible || 30),
-      horarios_idhorarios: parseInt(dispData.horarios_idhorarios),
+      cupo_total: Number.parseInt(dispData.cupo_total || 30),
+      cupo_disponible: Number.parseInt(dispData.cupo_disponible || 30),
+      horarios_idhorarios: Number.parseInt(dispData.horarios_idhorarios),
       activo: true
     }).select().single();
     if (error) throw new Error(error.message);
@@ -91,9 +91,9 @@ export const parametrosService = {
   async actualizarDisponibilidad(id, dispData) {
     const { data, error } = await supabase.from('disponibilidad').update({
       fecha: dispData.fecha,
-      cupo_total: parseInt(dispData.cupo_total),
-      cupo_disponible: parseInt(dispData.cupo_disponible),
-      horarios_idhorarios: parseInt(dispData.horarios_idhorarios)
+      cupo_total: Number.parseInt(dispData.cupo_total),
+      cupo_disponible: Number.parseInt(dispData.cupo_disponible),
+      horarios_idhorarios: Number.parseInt(dispData.horarios_idhorarios)
     }).eq('iddisponibilidad', id).select().single();
     if (error) throw new Error(error.message);
     return data;
@@ -133,12 +133,12 @@ export const parametrosService = {
     return data;
   },
   async crearPrecio(precio) {
-    const { data, error } = await supabase.from('lista_precios').insert({ descrip_precio: parseFloat(precio), activo: true }).select().single();
+    const { data, error } = await supabase.from('lista_precios').insert({ descrip_precio: Number.parseFloat(precio), activo: true }).select().single();
     if (error) throw new Error(error.message);
     return data;
   },
   async actualizarPrecio(id, precio) {
-    const { data, error } = await supabase.from('lista_precios').update({ descrip_precio: parseFloat(precio) }).eq('idlista_precios', id).select().single();
+    const { data, error } = await supabase.from('lista_precios').update({ descrip_precio: Number.parseFloat(precio) }).eq('idlista_precios', id).select().single();
     if (error) throw new Error(error.message);
     return data;
   },

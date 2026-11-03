@@ -49,8 +49,8 @@ export const actividadesService = {
         descripcion_actividad: actividadData.descripcion_actividad,
         informacion: actividadData.informacion,
         foto_actividad: actividadData.foto_actividad,
-        tipo_actividad_idtipo_actividad: parseInt(actividadData.tipo_actividad_idtipo_actividad),
-        lista_precios_idlista_precios: parseInt(actividadData.lista_precios_idlista_precios),
+        tipo_actividad_idtipo_actividad: Number.parseInt(actividadData.tipo_actividad_idtipo_actividad),
+        lista_precios_idlista_precios: Number.parseInt(actividadData.lista_precios_idlista_precios),
         activo: true
       })
       .select()
@@ -70,8 +70,8 @@ export const actividadesService = {
         descripcion_actividad: actividadData.descripcion_actividad,
         informacion: actividadData.informacion,
         foto_actividad: actividadData.foto_actividad,
-        tipo_actividad_idtipo_actividad: parseInt(actividadData.tipo_actividad_idtipo_actividad),
-        lista_precios_idlista_precios: parseInt(actividadData.lista_precios_idlista_precios)
+        tipo_actividad_idtipo_actividad: Number.parseInt(actividadData.tipo_actividad_idtipo_actividad),
+        lista_precios_idlista_precios: Number.parseInt(actividadData.lista_precios_idlista_precios)
       })
       .eq('idactividad', id)
       .eq('activo', true)

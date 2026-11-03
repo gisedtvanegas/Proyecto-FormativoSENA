@@ -24,7 +24,7 @@ export const productosService = {
       .insert({
         nombre: productoData.nombre,
         descripcion: productoData.descripcion,
-        precio: parseFloat(productoData.precio),
+        precio: Number.parseFloat(productoData.precio),
         imagen: productoData.imagen || productoData.imagen_url || null,
         activo: true
       })
@@ -44,7 +44,7 @@ export const productosService = {
       .update({
         nombre: productoData.nombre,
         descripcion: productoData.descripcion,
-        precio: parseFloat(productoData.precio),
+        precio: Number.parseFloat(productoData.precio),
         imagen: productoData.imagen || productoData.imagen_url || null
       })
       .eq('idproducto', id)
